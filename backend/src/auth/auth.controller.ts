@@ -30,13 +30,19 @@ export class AuthController {
   }
 
   @Post('forgot-password')
-  @ApiOperation({ summary: '忘记密码' })
+  @ApiOperation({ summary: '忘记密码（发送重置链接/验证码）' })
   forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
     return this.authService.forgotPassword(forgotPasswordDto);
   }
 
+  @Get('reset-password/validate')
+  @ApiOperation({ summary: '校验重置链接是否有效' })
+  validateResetToken(@Query('token') token: string) {
+    return this.authService.validateResetToken(token);
+  }
+
   @Post('reset-password')
-  @ApiOperation({ summary: '重置密码' })
+  @ApiOperation({ summary: '重置密码（凭链接 token 或 邮箱+验证码）' })
   resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }

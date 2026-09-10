@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/authStore';
@@ -21,11 +21,20 @@ const loginSchema = z.object({
 
 type LoginForm = z.infer<typeof loginSchema>;
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const justReset = searchParams.get('reset') === 'success';
   const { setAuth } = useAuthStore();
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  // 从重置页跳转回来时，明确提示需要用新密码重新登录（仅一次）
+  useEffect(() => {
+    if (justReset) {
+      toast.success('密码已重置，请使用新密码重新登录');
+    }
+  }, [justReset]);
 
   const {
     register,
@@ -57,6 +66,19 @@ export default function LoginPage() {
         className="w-full max-w-md"
       >
         <div className="glass-card p-8">
+          {justReset && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 flex items-start gap-2 rounded-lg border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-300"
+            >
+              <CheckCircle size={18} className="mt-0.5 shrink-0" />
+              <span>
+                密码重置成功！请使用<span className="font-semibold">新密码</span>登录，
+                您需要手动登录后才会进入账户。
+              </span>
+            </motion.div>
+          )}
           <div className="text-center mb-8">
             <div className="w-16 h-16 bg-minecraft-green rounded-xl flex items-center justify-center mx-auto mb-4">
               <span className="text-white font-bold text-2xl">MC</span>
@@ -137,5 +159,19 @@ export default function LoginPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }

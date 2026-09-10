@@ -60,9 +60,13 @@ export const authApi = {
   login: (data: { email: string; password: string }) =>
     request.post<{ accessToken: string; user: any; message: string }>('/auth/login', data),
   forgotPassword: (data: { email: string }) =>
-    request.post('/auth/forgot-password', data),
-  resetPassword: (data: { token: string; password: string }) =>
-    request.post('/auth/reset-password', data),
+    request.post<{ message: string; resetToken?: string; resetCode?: string; resetLink?: string }>('/auth/forgot-password', data),
+  validateResetToken: (token: string) =>
+    request.get<{ valid: boolean; status: 'valid' | 'expired' | 'invalid'; message: string }>(
+      `/auth/reset-password/validate?token=${encodeURIComponent(token)}`,
+    ),
+  resetPassword: (data: { token?: string; email?: string; code?: string; password: string }) =>
+    request.post<{ message: string }>('/auth/reset-password', data),
   verifyEmail: (token: string) =>
     request.get(`/auth/verify-email?token=${token}`),
 };

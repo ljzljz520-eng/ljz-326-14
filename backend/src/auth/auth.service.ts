@@ -64,30 +64,59 @@ export class AuthService {
   }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const token = await this.usersService.createPasswordResetToken(
+    // 账号不存在时直接抛出异常，前端给出明确的"账号不存在"提示
+    const credentials = await this.usersService.createPasswordResetToken(
       forgotPasswordDto.email,
     );
-    if (token) {
-      // 这里可以集成邮件发送服务
-      // 目前仅返回token用于测试
-      return {
-        message: '密码重置链接已发送到您的邮箱',
-        // 仅用于测试，生产环境应该发送邮件
-        resetToken: token,
-      };
-    }
-    // 即使邮箱不存在也返回相同信息，防止枚举攻击
-    return { message: '如果邮箱存在，密码重置链接已发送' };
+    // 这里应集成邮件发送服务（重置链接 + 验证码）
+    // 目前开发模式下随接口返回，便于联调测试
+    const resetLink = `/reset-password?token=${credentials.token}`;
+    return {
+      message: '重置链接和验证码已发送到您的邮箱，请注意查收（1小时内有效）',
+      resetLink,
+      resetToken: credentials.token, // 仅用于测试，生产环境不应返回
+      resetCode: credentials.code, // 仅用于测试，生产环境不应返回
+      expiresIn: 3600,
+    };
+  }
+
+  async validateResetToken(token: string) {
+    const status = await this.usersService.validateResetToken(token);
+    return {
+      valid: status === 'valid',
+      status,
+      message:
+        status === 'valid'
+          ? '链接有效'
+          : status === 'expired'
+            ? '重置链接已过期，请重新申请'
+            : '重置链接无效，请重新申请',
+    };
   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const result = await this.usersService.resetPassword(
-      resetPasswordDto.token,
-      resetPasswordDto.password,
-    );
-    if (!result) {
-      throw new BadRequestException('重置链接无效或已过期');
+    const hasToken = !!resetPasswordDto.token;
+    const hasCodeCredentials = !!resetPasswordDto.email && !!resetPasswordDto.code;
+    if (!hasToken && !hasCodeCredentials) {
+      throw new BadRequestException('请提供有效的重置链接，或填写邮箱与验证码');
     }
-    return { message: '密码重置成功' };
+
+    const result = await this.usersService.resetPassword({
+      token: resetPasswordDto.token,
+      email: resetPasswordDto.email,
+      code: resetPasswordDto.code,
+      newPassword: resetPasswordDto.password,
+    });
+
+    switch (result) {
+      case 'ok':
+        return { message: '密码重置成功，请使用新密码重新登录' };
+      case 'same_password':
+        throw new BadRequestException('新密码不能与旧密码相同，请更换一个新密码');
+      case 'expired':
+        throw new BadRequestException('重置链接或验证码已过期，请重新申请');
+      default:
+        throw new BadRequestException('重置链接或验证码无效，请重新申请');
+    }
   }
 }

@@ -40,6 +40,9 @@ export class User {
   @Column({ length: 100, nullable: true })
   resetPasswordToken: string;
 
+  @Column({ length: 6, nullable: true })
+  resetPasswordCode: string;
+
   @Column({ type: 'datetime', nullable: true })
   resetPasswordExpires: Date;
 
