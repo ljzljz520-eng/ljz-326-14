@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --minecraft-green: #71A600;
+  --minecraft-dark-green: #5A8500;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background-attachment: fixed;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(113, 166, 0, 0.5);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(113, 166, 0, 0.8);
+}
+
+/* 磨砂玻璃卡片 */
+@layer components {
+  .glass-card {
+    @apply bg-white/10 backdrop-blur-md rounded-xl border border-white/20 shadow-xl;
+    @apply transition-all duration-300;
+  }
+
+  .glass-card:hover {
+    @apply bg-white/15 border-white/30;
+  }
+
+  .glass-button {
+    @apply px-6 py-3 bg-minecraft-green hover:bg-minecraft-darkGreen;
+    @apply text-white font-medium rounded-lg;
+    @apply transition-all duration-200;
+    @apply shadow-lg hover:shadow-minecraft-green/30;
+  }
+
+  .glass-input {
+    @apply w-full px-4 py-3 bg-white/10 border border-white/20;
+    @apply rounded-lg text-white placeholder-gray-400;
+    @apply focus:outline-none focus:border-minecraft-green focus:ring-2 focus:ring-minecraft-green/30;
+    @apply transition-all duration-200;
+  }
+
+  .minecraft-title {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold;
+    @apply bg-gradient-to-r from-minecraft-green via-minecraft-lightGreen to-minecraft-green;
+    @apply bg-clip-text text-transparent;
+    @apply animate-pulse-slow;
+  }
+
+  .section-title {
+    @apply text-2xl md:text-3xl font-bold text-white mb-2;
+  }
+
+  .section-subtitle {
+    @apply text-gray-400 mb-8;
+  }
+}
+
+/* 动画效果 */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes glow {
+  0% { box-shadow: 0 0 5px #71A600, 0 0 10px #71A600; }
+  100% { box-shadow: 0 0 20px #71A600, 0 0 30px #71A600; }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite alternate;
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* 背景装饰 */
+.bg-grid {
+  background-image: 
+    linear-gradient(rgba(113, 166, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(113, 166, 0, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.bg-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/* 表单样式 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: white;
+  -webkit-box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.1) inset;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 选中文本颜色 */
+::selection {
+  background: rgba(113, 166, 0, 0.5);
+  color: white;
+}
+
+/* 响应式容器 */
+.container-custom {
+  @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+/* 页面过渡 */
+.page-transition {
+  @apply transition-all duration-300 ease-in-out;
+}
+
+/* 按钮悬停效果 */
+.btn-hover-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-hover-effect::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-hover-effect:hover::before {
+  left: 100%;
+}
