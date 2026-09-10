@@ -262,12 +262,12 @@ function ResetPasswordContent() {
                 <div className="relative">
                   <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
-                    {...register('password')}
+                    {...register('password', {
+                      // 通过 register 选项挂载自定义 onChange，
+                      // 避免覆盖 RHF 内部的 onChange
+                      onChange: () => setSamePassword(false),
+                    })}
                     type={showPassword ? 'text' : 'password'}
-                    onChange={(e) => {
-                      register('password').onChange(e);
-                      setSamePassword(false);
-                    }}
                     className="glass-input pl-10 pr-10"
                     placeholder="至少8位，含大小写字母、数字和特殊字符"
                   />

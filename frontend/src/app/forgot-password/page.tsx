@@ -158,9 +158,12 @@ export default function ForgotPasswordPage() {
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
-                  {...register('email')}
+                  {...register('email', {
+                    // 通过 register 选项挂载自定义 onChange，
+                    // 避免覆盖 RHF 内部的 onChange 导致拿不到输入值
+                    onChange: () => setNotFound(false),
+                  })}
                   type="email"
-                  onChange={() => setNotFound(false)}
                   className="glass-input pl-10"
                   placeholder="your@email.com"
                 />

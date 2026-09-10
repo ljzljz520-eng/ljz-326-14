@@ -40,7 +40,8 @@ export class User {
   @Column({ length: 100, nullable: true })
   resetPasswordToken: string;
 
-  @Column({ length: 6, nullable: true })
+  // 存放 bcrypt 哈希（60 字符），不是明文 6 位验证码
+  @Column({ length: 255, nullable: true })
   resetPasswordCode: string;
 
   @Column({ type: 'datetime', nullable: true })

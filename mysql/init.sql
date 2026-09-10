@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
   emailVerified BOOLEAN DEFAULT FALSE,
   verificationToken VARCHAR(100),
   resetPasswordToken VARCHAR(100),
-  resetPasswordCode VARCHAR(6),
+  resetPasswordCode VARCHAR(255),
   resetPasswordExpires DATETIME,
   avatar TEXT,
   playTime INT DEFAULT 0,
